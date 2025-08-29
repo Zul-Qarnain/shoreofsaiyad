@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -32,11 +31,12 @@ const mockReviews: Review[] = [
 ];
 
 export default function ProductDetailPage({ params }: { params: { id: string } }) {
+  const { id } = params;
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const product = mockProducts.find((p) => p.id === params.id);
+  const product = mockProducts.find((p) => p.id === id);
 
   if (!product) {
     notFound();
@@ -145,6 +145,7 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
                         <div className="flex items-center justify-between">
                             <div>
                                 <p className="font-semibold">{review.author}</p>
+
                                 <p className="text-sm text-muted-foreground">{review.date}</p>
                             </div>
                             <div className="flex items-center gap-1">
