@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 
 export default function AboutPage() {
@@ -10,21 +11,16 @@ export default function AboutPage() {
               Our Story
             </h1>
             <p className="mt-6 text-lg text-gray-600">
-              Memento started with a simple idea: to bring the world's most
-              cherished memories and crafts into your home. We travel far and
-              wide to curate a collection of unique souvenirs, each with its own
-              story.
+              ✨ Memento was born from a simple thought—finding the perfect gift for the women we love, without the worry of overpriced or low-quality ornaments.
             </p>
             <p className="mt-4 text-lg text-gray-600">
-              Our mission is to connect you with beautiful, handcrafted items that
-              evoke a sense of place and time. We believe that a souvenir is more
-              than just an object; it's a tangible piece of a journey, a memory
-              made real.
+              Here, you’ll discover premium-quality female ornaments at reasonable prices—often more affordable than the local market. Each piece is designed to bring elegance, beauty, and joy, whether it’s for your mother, sister, or someone special.
             </p>
             <p className="mt-4 text-lg text-gray-600">
-              We partner with local artisans and small businesses to ensure that
-              every purchase supports a community and preserves traditional
-              craftsmanship. Thank you for being a part of our story.
+              And this is just the beginning. Very soon, we’ll be introducing more exciting products to make your gifting moments even more memorable.
+            </p>
+             <p className="mt-4 text-lg text-gray-600">
+              🌸 Stay with us, support us, and be a part of the Memento journey.
             </p>
           </div>
           <div className="relative h-96 overflow-hidden rounded-lg shadow-xl">
