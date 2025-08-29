@@ -10,7 +10,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronUp, ChevronDown, Star, ThumbsUp, ThumbsDown } from "lucide-react";
 import { useCart } from "@/providers/cart-provider";
 import { useToast } from "@/hooks/use-toast";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 
 // Mock data - in a real app, you'd fetch this
@@ -30,8 +30,9 @@ const mockReviews: Review[] = [
     { id: '2', author: 'Ethan Miller', avatarUrl: 'https://picsum.photos/101/101', date: '3 months ago', rating: 4, text: "Beautiful mug, but the handle is a bit smaller than expected. Still, it's a lovely addition to my collection.", likes: 8, dislikes: 1 },
 ];
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default function ProductDetailPage() {
+  const params = useParams();
+  const id = params.id as string;
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
   const { toast } = useToast();
