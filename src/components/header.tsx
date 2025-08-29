@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { Mountain, Search, ShoppingCart } from "lucide-react";
+import { Briefcase, Search, ShoppingBag, User } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { useCart } from "@/providers/cart-provider";
 import { Cart } from "@/components/cart";
 import { usePathname } from "next/navigation";
@@ -16,8 +15,8 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/shop", label: "Shop" },
-    { href: "/about", label: "About" },
+    { href: "/shop", label: "Products" },
+    { href: "/about", label: "About Us" },
     { href: "/contact", label: "Contact" },
   ];
 
@@ -26,34 +25,29 @@ export function Header() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center">
           <Link href="/" className="mr-6 flex items-center gap-2">
-            <Mountain className="h-6 w-6 text-primary" />
-            <span className="hidden font-headline font-bold sm:inline-block">
-              Memento
+            <Briefcase className="h-6 w-6" />
+            <span className="font-bold sm:inline-block text-lg">
+              Gift Shop
             </span>
           </Link>
-          <nav className="hidden gap-6 text-sm font-medium md:flex">
+          <nav className="hidden gap-6 text-sm font-medium md:flex flex-1 justify-center">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "transition-colors hover:text-primary",
-                  pathname === link.href ? "text-primary" : "text-muted-foreground"
+                  "transition-colors hover:text-foreground",
+                  pathname === link.href ? "text-foreground" : "text-muted-foreground"
                 )}
               >
                 {link.label}
               </Link>
             ))}
           </nav>
-          <div className="ml-auto flex items-center gap-4">
-            <div className="relative hidden sm:block">
-              <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                type="search"
-                placeholder="Search products..."
-                className="w-full rounded-lg bg-secondary pl-8 md:w-[200px] lg:w-[300px]"
-              />
-            </div>
+          <div className="flex items-center gap-4">
+             <Button variant="ghost" size="icon" aria-label="Search">
+                <Search className="h-5 w-5" />
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -61,16 +55,19 @@ export function Header() {
               onClick={() => setIsCartOpen(true)}
               aria-label="Open cart"
             >
-              <ShoppingCart className="h-5 w-5" />
+              <ShoppingBag className="h-5 w-5" />
               {cartCount > 0 && (
-                <Badge
-                  variant="default"
-                  className="absolute -right-2 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-primary p-0 text-xs text-primary-foreground"
-                >
+                <span className="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-xs font-bold text-primary-foreground">
                   {cartCount}
-                </Badge>
+                </span>
               )}
             </Button>
+             <Avatar className="h-8 w-8">
+                <AvatarImage src="https://picsum.photos/100" alt="User" />
+                <AvatarFallback>
+                    <User className="h-5 w-5" />
+                </AvatarFallback>
+            </Avatar>
           </div>
         </div>
       </header>
