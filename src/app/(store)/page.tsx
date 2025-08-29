@@ -28,13 +28,13 @@ const mockProducts: Product[] = [
   },
   {
     id: "3",
-    name: "Collectible Doll",
-    price: 35.0,
+    name: "Handcrafted Ceramic Mug",
+    price: 25.00,
     imageUrl: "https://picsum.photos/600/602",
-    description: "A charming addition to any collection.",
+    description: "Each mug is uniquely crafted by skilled artisans, ensuring no two are exactly alike.",
     stock: 20,
-    dataAiHint: "doll toy",
-    category: "Toys",
+    dataAiHint: "ceramic mug",
+    category: "Handcrafted Mugs"
   },
   {
     id: "6",

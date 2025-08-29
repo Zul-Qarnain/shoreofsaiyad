@@ -3,14 +3,14 @@ import { ProductCard } from "@/components/product-card";
 import type { Product } from "@/types";
 
 const mockProducts: Product[] = [
-    { id: '5', name: 'Elegant Necklace', price: 55.00, imageUrl: 'https://picsum.photos/600/600', description: 'A timeless piece for any occasion.', stock: 8, dataAiHint: 'necklace jewelry', category: 'Jewelry' },
-    { id: '4', name: 'Sparkling Hair Clip', price: 12.00, imageUrl: 'https://picsum.photos/600/601', description: 'Add a touch of glamour to your style.', stock: 30, dataAiHint: 'hair clip', category: 'Accessories' },
-    { id: '3', name: 'Collectible Doll', price: 35.00, imageUrl: 'https://picsum.photos/600/602', description: 'A charming addition to any collection.', stock: 20, dataAiHint: 'doll toy', category: 'Toys' },
-    { id: '6', name: 'Small Gift Set', price: 18.75, imageUrl: 'https://picsum.photos/600/603', description: 'Perfect for any celebration.', stock: 25, dataAiHint: 'gift box', category: 'Gifts' },
-    { id: '1', name: 'Venetian Mask', price: 45.00, imageUrl: 'https://picsum.photos/600/400', description: 'An ornate Venetian mask.', stock: 10, dataAiHint: 'venetian mask', category: 'Decor' },
-    { id: '2', name: 'Eiffel Tower Replica', price: 25.50, imageUrl: 'https://picsum.photos/600/401', description: 'A classic Paris souvenir.', stock: 15, dataAiHint: 'eiffel tower', category: 'Replicas' },
-    { id: '7', name: 'Matryoshka Nesting Dolls', price: 42.00, imageUrl: 'https://picsum.photos/600/406', description: 'Traditional Russian nesting dolls.', stock: 12, dataAiHint: 'nesting dolls', category: 'Toys' },
-    { id: '8', name: 'Egyptian Papyrus Art', price: 28.00, imageUrl: 'https://picsum.photos/600/407', description: 'Hand-painted papyrus art.', stock: 18, dataAiHint: 'papyrus art', category: 'Art' },
+    { id: '5', name: 'Elegant Necklace', price: 55.00, imageUrl: 'https://picsum.photos/600/600', description: 'A timeless piece for any occasion.', stock: 8, dataAiHint: 'necklace jewelry', category: 'Jewelry', material: 'Silver-plated alloy', care: 'Avoid contact with water and perfume.' },
+    { id: '4', name: 'Sparkling Hair Clip', price: 12.00, imageUrl: 'https://picsum.photos/600/601', description: 'Add a touch of glamour to your style.', stock: 30, dataAiHint: 'hair clip', category: 'Accessories', material: 'Metal alloy with crystals', care: 'Wipe clean with a soft cloth.' },
+    { id: '3', name: 'Handcrafted Ceramic Mug', price: 25.00, imageUrl: 'https://picsum.photos/600/602', description: 'Each mug is uniquely crafted by skilled artisans, ensuring no two are exactly alike. Made from high-quality ceramic, these mugs are both beautiful and durable, perfect for enjoying your favorite beverages.', stock: 20, dataAiHint: 'ceramic mug', category: 'Handcrafted Mugs', material: 'High-quality ceramic', care: 'Dishwasher and microwave safe' },
+    { id: '6', name: 'Small Gift Set', price: 18.75, imageUrl: 'https://picsum.photos/600/603', description: 'Perfect for any celebration.', stock: 25, dataAiHint: 'gift box', category: 'Gifts', material: 'Varies', care: 'N/A' },
+    { id: '1', name: 'Venetian Mask', price: 45.00, imageUrl: 'https://picsum.photos/600/400', description: 'An ornate Venetian mask.', stock: 10, dataAiHint: 'venetian mask', category: 'Decor', material: 'Paper-mache', care: 'Handle with care. Do not get wet.' },
+    { id: '2', name: 'Eiffel Tower Replica', price: 25.50, imageUrl: 'https://picsum.photos/600/401', description: 'A classic Paris souvenir.', stock: 15, dataAiHint: 'eiffel tower', category: 'Replicas', material: 'Metal', care: 'Dust occasionally.' },
+    { id: '7', name: 'Matryoshka Nesting Dolls', price: 42.00, imageUrl: 'https://picsum.photos/600/406', description: 'Traditional Russian nesting dolls.', stock: 12, dataAiHint: 'nesting dolls', category: 'Toys', material: 'Wood', care: 'Keep dry.' },
+    { id: '8', name: 'Egyptian Papyrus Art', price: 28.00, imageUrl: 'https://picsum.photos/600/407', description: 'Hand-painted papyrus art.', stock: 18, dataAiHint: 'papyrus art', category: 'Art', material: 'Papyrus', care: 'Keep away from direct sunlight.' },
 ];
 
 export default function ShopPage() {

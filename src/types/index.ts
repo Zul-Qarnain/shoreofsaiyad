@@ -8,8 +8,21 @@ export interface Product {
   stock: number;
   dataAiHint?: string;
   category: string;
+  material?: string;
+  care?: string;
 }
 
 export interface CartItem extends Product {
   quantity: number;
+}
+
+export interface Review {
+  id: string;
+  author: string;
+  avatarUrl: string;
+  date: string;
+  rating: number;
+  text: string;
+  likes: number;
+  dislikes: number;
 }
