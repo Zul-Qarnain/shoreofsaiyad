@@ -17,9 +17,9 @@ type PaymentMethod = "cod" | "mobile";
 type MobilePaymentOption = "bkash" | "nagad";
 
 const deliveryOptions = {
-  "inside-dhaka": { name: "Inside Dhaka", time: "1-2 Days", price: 70 },
-  "sub-dhaka": { name: "Sub Dhaka", time: "1-2 Days", price: 90 },
-  "outside-dhaka": { name: "Outside Dhaka", time: "2-3 Days", price: 110 },
+  "inside-dhaka": { name: "Inside Dhaka", time: "2-3 Days", price: 70 },
+  "sub-dhaka": { name: "Sub Dhaka", time: "2-3 Days", price: 100 },
+  "outside-dhaka": { name: "Outside Dhaka", time: "3-5 Days", price: 130 },
 };
 
 export default function CheckoutPage() {
@@ -205,7 +205,7 @@ export default function CheckoutPage() {
                       <p className="font-medium">{item.name}</p>
                       <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                     </div>
-                    <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                    <p className="font-medium">৳{(item.price * item.quantity).toFixed(2)}</p>
                   </div>
                 ))}
               </div>

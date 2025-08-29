@@ -91,9 +91,9 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
                     <TableRow key={item.id}>
                       <TableCell className="font-medium">{item.name}</TableCell>
                       <TableCell className="text-center">{item.quantity}</TableCell>
-                      <TableCell className="text-right">${item.price.toFixed(2)}</TableCell>
+                      <TableCell className="text-right">৳{item.price.toFixed(2)}</TableCell>
                       <TableCell className="text-right">
-                        ${(item.price * item.quantity).toFixed(2)}
+                        ৳{(item.price * item.quantity).toFixed(2)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -104,19 +104,19 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
               <div className="w-full max-w-xs space-y-2">
                  <div className="flex justify-between">
                     <span>Subtotal</span>
-                    <span>${order.total.toFixed(2)}</span>
+                    <span>৳{order.total.toFixed(2)}</span>
                 </div>
                  <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>$5.00</span>
+                    <span>৳5.00</span>
                 </div>
                  <div className="flex justify-between">
                     <span>Tax</span>
-                    <span>$8.21</span>
+                    <span>৳8.21</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 text-lg font-bold">
                     <span>Total</span>
-                    <span>${(order.total + 5.00 + 8.21).toFixed(2)}</span>
+                    <span>৳{(order.total + 5.00 + 8.21).toFixed(2)}</span>
                 </div>
               </div>
             </div>

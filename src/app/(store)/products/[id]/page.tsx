@@ -92,7 +92,7 @@ export default function ProductDetailPage() {
             <div className="space-y-4 text-muted-foreground">
                 <div className="flex justify-between">
                     <span className="font-medium text-foreground">Price</span>
-                    <span>${product.price.toFixed(2)}</span>
+                    <span>৳{product.price.toFixed(2)}</span>
                 </div>
                  <div className="flex justify-between">
                     <span className="font-medium text-foreground">Material</span>

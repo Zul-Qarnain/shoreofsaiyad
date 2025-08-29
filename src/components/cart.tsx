@@ -51,7 +51,7 @@ export function Cart() {
                     <div className="flex-1">
                       <h3 className="font-semibold">{item.name}</h3>
                       <p className="text-sm text-muted-foreground">
-                        ${item.price.toFixed(2)}
+                        ৳{item.price.toFixed(2)}
                       </p>
                       <div className="mt-2 flex items-center gap-2">
                         <Button
@@ -94,7 +94,7 @@ export function Cart() {
               <div className="flex w-full flex-col gap-4">
                 <div className="flex justify-between text-lg font-semibold">
                   <span>Total</span>
-                  <span>${cartTotal.toFixed(2)}</span>
+                  <span>৳{cartTotal.toFixed(2)}</span>
                 </div>
                 <SheetClose asChild>
                   <Button asChild size="lg" className="w-full">

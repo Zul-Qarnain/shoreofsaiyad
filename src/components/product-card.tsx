@@ -31,7 +31,7 @@ export function ProductCard({ product }: { product: Product }) {
           <p className="text-sm text-muted-foreground line-clamp-2">{product.description}</p>
         </div>
         <div className="mt-4 flex items-end justify-between">
-            <p className="text-xl font-bold">${product.price.toFixed(2)}</p>
+            <p className="text-xl font-bold">৳{product.price.toFixed(2)}</p>
         </div>
         <div className="mt-4">
           <AddToCartButton product={product} />
