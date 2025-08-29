@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
 import type { Product } from "@/types";
@@ -13,6 +14,7 @@ const mockProducts: Product[] = [
     description: "A timeless piece for any occasion.",
     stock: 8,
     dataAiHint: "necklace jewelry",
+    category: "Jewelry",
   },
   {
     id: "4",
@@ -22,6 +24,7 @@ const mockProducts: Product[] = [
     description: "Add a touch of glamour to your style.",
     stock: 30,
     dataAiHint: "hair clip",
+    category: "Accessories",
   },
   {
     id: "3",
@@ -31,6 +34,7 @@ const mockProducts: Product[] = [
     description: "A charming addition to any collection.",
     stock: 20,
     dataAiHint: "doll toy",
+    category: "Toys",
   },
   {
     id: "6",
@@ -40,6 +44,7 @@ const mockProducts: Product[] = [
     description: "Perfect for any celebration.",
     stock: 25,
     dataAiHint: "gift box",
+    category: "Gifts",
   },
 ];
 

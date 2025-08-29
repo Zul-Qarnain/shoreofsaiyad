@@ -1,3 +1,4 @@
+
 import Image from "next/image";
 import { AddToCartButton } from "@/components/add-to-cart-button";
 import type { Product } from "@/types";
@@ -15,7 +16,8 @@ export function ProductCard({ product }: { product: Product }) {
             data-ai-hint={product.dataAiHint}
           />
         </div>
-      <h3 className="mt-4 text-lg font-semibold">{product.name}</h3>
+      <p className="mt-4 text-sm text-muted-foreground">{product.category}</p>
+      <h3 className="mt-1 text-lg font-semibold">{product.name}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{product.description}</p>
     </div>
   );
