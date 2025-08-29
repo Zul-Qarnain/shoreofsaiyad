@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Briefcase, Search, ShoppingBag, User } from "lucide-react";
+import { Mountain, Search, ShoppingBag, User } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/providers/cart-provider";
@@ -15,8 +15,8 @@ export function Header() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/shop", label: "Products" },
-    { href: "/about", label: "About Us" },
+    { href: "/shop", label: "Shop" },
+    { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
   ];
 
@@ -25,9 +25,9 @@ export function Header() {
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="container flex h-16 items-center">
           <Link href="/" className="mr-6 flex items-center gap-2">
-            <Briefcase className="h-6 w-6" />
+            <Mountain className="h-6 w-6 text-primary" />
             <span className="font-bold sm:inline-block text-lg">
-              Gift Shop
+              Memento
             </span>
           </Link>
           <nav className="hidden gap-6 text-sm font-medium md:flex flex-1 justify-center">
@@ -36,8 +36,8 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "transition-colors hover:text-foreground",
-                  pathname === link.href ? "text-foreground" : "text-muted-foreground"
+                  "transition-colors hover:text-primary",
+                  pathname === link.href ? "text-primary font-semibold" : "text-muted-foreground"
                 )}
               >
                 {link.label}

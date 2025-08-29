@@ -1,13 +1,23 @@
 import type { Metadata } from "next";
+import { Poppins, PT_Sans } from "next/font/google";
 import { CartProvider } from "@/providers/cart-provider";
 import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
-import { Inter } from 'next/font/google';
 
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' });
+const poppins = Poppins({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-poppins",
+});
+
+const ptSans = PT_Sans({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  variable: "--font-pt-sans",
+});
 
 export const metadata: Metadata = {
-  title: "Gift Shop",
+  title: "Memento",
   description: "Souvenirs for Special Moments",
 };
 
@@ -17,19 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} light`}>
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang="en" className={`${poppins.variable} ${ptSans.variable} light`}>
       <body className="font-body antialiased">
         <CartProvider>
           {children}
