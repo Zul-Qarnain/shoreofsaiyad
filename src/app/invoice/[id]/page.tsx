@@ -23,12 +23,15 @@ import { Button } from "@/components/ui/button";
 import { Mountain, Download, ShoppingCart } from "lucide-react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { useParams } from "next/navigation";
 
-export default function InvoicePage({ params }: { params: { id: string } }) {
+export default function InvoicePage() {
   const invoiceRef = useRef<HTMLDivElement>(null);
+  const params = useParams();
+  const id = params.id as string;
 
   const order = {
-    id: params.id,
+    id: id,
     date: new Date(),
     status: "Confirmed",
     customer: {
