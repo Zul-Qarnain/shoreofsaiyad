@@ -71,7 +71,10 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
                  <h3 className="mb-2 font-semibold">Order Details:</h3>
                 <div className="space-y-1 text-muted-foreground">
                     <p>Date: {order.date.toLocaleDateString()}</p>
-                    <p>Status: <Badge variant={order.status === 'Confirmed' ? 'default' : 'secondary'} className="bg-green-100 text-green-800">{order.status}</Badge></p>
+                    <div className="flex items-center justify-end gap-2">
+                      <span>Status:</span>
+                      <Badge variant={order.status === 'Confirmed' ? 'default' : 'secondary'} className="bg-green-100 text-green-800">{order.status}</Badge>
+                    </div>
                 </div>
               </div>
             </div>
