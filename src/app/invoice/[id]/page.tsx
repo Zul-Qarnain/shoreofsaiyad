@@ -1,3 +1,8 @@
+
+"use client";
+
+import { useRef } from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -14,10 +19,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Mountain } from "lucide-react";
-import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import { Mountain, Download, ShoppingCart } from "lucide-react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
 export default function InvoicePage({ params }: { params: { id: string } }) {
+  const invoiceRef = useRef<HTMLDivElement>(null);
+
   const order = {
     id: params.id,
     date: new Date(),
@@ -32,12 +41,42 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
       { id: "2", name: "Eiffel Tower Replica", quantity: 2, price: 25.5 },
     ],
     total: 96.5,
+    shipping: 70.0,
+    tax: 8.21,
   };
+
+  const handleDownloadPdf = () => {
+    const input = invoiceRef.current;
+    if (input) {
+      html2canvas(input, { scale: 2 }).then((canvas) => {
+        const imgData = canvas.toDataURL("image/png");
+        const pdf = new jsPDF("p", "mm", "a4");
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = canvas.width;
+        const imgHeight = canvas.height;
+        const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+        const imgX = (pdfWidth - imgWidth * ratio) / 2;
+        const imgY = 0;
+        pdf.addImage(
+          imgData,
+          "PNG",
+          imgX,
+          imgY,
+          imgWidth * ratio,
+          imgHeight * ratio
+        );
+        pdf.save(`invoice-${order.id}.pdf`);
+      });
+    }
+  };
+
+  const grandTotal = order.total + order.shipping + order.tax;
 
   return (
     <div className="bg-muted/40 py-12 sm:py-20">
       <div className="container mx-auto max-w-3xl">
-        <Card className="shadow-lg">
+        <Card className="shadow-lg" ref={invoiceRef}>
           <CardHeader className="border-b bg-accent/10">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -111,15 +150,15 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
                 </div>
                  <div className="flex justify-between">
                     <span>Shipping</span>
-                    <span>৳5.00</span>
+                    <span>৳{order.shipping.toFixed(2)}</span>
                 </div>
                  <div className="flex justify-between">
                     <span>Tax</span>
-                    <span>৳8.21</span>
+                    <span>৳{order.tax.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 text-lg font-bold">
                     <span>Total</span>
-                    <span>৳{(order.total + 5.00 + 8.21).toFixed(2)}</span>
+                    <span>৳{grandTotal.toFixed(2)}</span>
                 </div>
               </div>
             </div>
@@ -129,6 +168,18 @@ export default function InvoicePage({ params }: { params: { id: string } }) {
             </div>
           </CardContent>
         </Card>
+        <div className="mt-8 flex justify-center gap-4">
+          <Button onClick={handleDownloadPdf}>
+            <Download className="mr-2 h-4 w-4" />
+            Download PDF
+          </Button>
+          <Button asChild variant="outline">
+            <Link href="/">
+              <ShoppingCart className="mr-2 h-4 w-4" />
+              Continue Shopping
+            </Link>
+          </Button>
+        </div>
       </div>
     </div>
   );
