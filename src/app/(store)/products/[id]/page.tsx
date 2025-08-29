@@ -12,6 +12,7 @@ import { ChevronUp, ChevronDown, Star, ThumbsUp, ThumbsDown } from "lucide-react
 import { useCart } from "@/providers/cart-provider";
 import { useToast } from "@/hooks/use-toast";
 import { notFound } from "next/navigation";
+import { Input } from "@/components/ui/input";
 
 // Mock data - in a real app, you'd fetch this
 const mockProducts: Product[] = [
