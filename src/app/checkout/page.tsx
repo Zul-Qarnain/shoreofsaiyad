@@ -227,9 +227,14 @@ export default function CheckoutPage() {
               </div>
             </CardContent>
           </Card>
-           <Button type="submit" size="lg" className="mt-6 w-full">
-            Place Order
-          </Button>
+           <div className="mt-6 flex flex-col gap-2">
+            <Button type="submit" size="lg" className="w-full">
+                Place Order
+            </Button>
+            <Button type="button" size="lg" variant="outline" className="w-full" onClick={() => router.push('/shop')}>
+                Cancel Order
+            </Button>
+           </div>
         </div>
       </form>
     </div>
