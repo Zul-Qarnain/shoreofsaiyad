@@ -28,7 +28,7 @@ export function Cart() {
 
   return (
     <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-      <SheetContent className="flex w-full flex-col pr-0 sm:max-w-lg">
+      <SheetContent side="left" className="flex w-full flex-col pl-0 sm:max-w-lg">
         <SheetHeader className="px-6">
           <SheetTitle>Shopping Cart</SheetTitle>
         </SheetHeader>
