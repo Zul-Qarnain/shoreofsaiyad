@@ -1,29 +1,58 @@
-
+import type { Metadata } from "next";
 import { ProductCard } from "@/components/product-card";
-import type { Product } from "@/types";
+import { ShopFilters } from "@/components/shop-filters";
+import { filterProducts, getCategories, products, type SortOption } from "@/lib/products";
 
-const mockProducts: Product[] = [
-    { id: '5', name: 'Elegant Necklace', price: 55.00, imageUrl: 'https://picsum.photos/600/600', description: 'A timeless piece for any occasion.', stock: 8, dataAiHint: 'necklace jewelry', category: 'Jewelry', material: 'Silver-plated alloy', care: 'Avoid contact with water and perfume.' },
-    { id: '4', name: 'Sparkling Hair Clip', price: 12.00, imageUrl: 'https://picsum.photos/600/601', description: 'Add a touch of glamour to your style.', stock: 30, dataAiHint: 'hair clip', category: 'Accessories', material: 'Metal alloy with crystals', care: 'Wipe clean with a soft cloth.' },
-    { id: '3', name: 'Handcrafted Ceramic Mug', price: 25.00, imageUrl: 'https://picsum.photos/600/602', description: 'Each mug is uniquely crafted by skilled artisans, ensuring no two are exactly alike. Made from high-quality ceramic, these mugs are both beautiful and durable, perfect for enjoying your favorite beverages.', stock: 20, dataAiHint: 'ceramic mug', category: 'Handcrafted Mugs', material: 'High-quality ceramic', care: 'Dishwasher and microwave safe' },
-    { id: '6', name: 'Small Gift Set', price: 18.75, imageUrl: 'https://picsum.photos/600/603', description: 'Perfect for any celebration.', stock: 25, dataAiHint: 'gift box', category: 'Gifts', material: 'Varies', care: 'N/A' },
-    { id: '1', name: 'Venetian Mask', price: 45.00, imageUrl: 'https://picsum.photos/600/400', description: 'An ornate Venetian mask.', stock: 10, dataAiHint: 'venetian mask', category: 'Decor', material: 'Paper-mache', care: 'Handle with care. Do not get wet.' },
-    { id: '2', name: 'Eiffel Tower Replica', price: 25.50, imageUrl: 'https://picsum.photos/600/401', description: 'A classic Paris souvenir.', stock: 15, dataAiHint: 'eiffel tower', category: 'Replicas', material: 'Metal', care: 'Dust occasionally.' },
-    { id: '7', name: 'Matryoshka Nesting Dolls', price: 42.00, imageUrl: 'https://picsum.photos/600/406', description: 'Traditional Russian nesting dolls.', stock: 12, dataAiHint: 'nesting dolls', category: 'Toys', material: 'Wood', care: 'Keep dry.' },
-    { id: '8', name: 'Egyptian Papyrus Art', price: 28.00, imageUrl: 'https://picsum.photos/600/407', description: 'Hand-painted papyrus art.', stock: 18, dataAiHint: 'papyrus art', category: 'Art', material: 'Papyrus', care: 'Keep away from direct sunlight.' },
-];
+export const metadata: Metadata = {
+  title: "Shop",
+  description: "Browse ornaments, accessories, gift sets and more.",
+};
 
-export default function ShopPage() {
+const SORTS: SortOption[] = ["featured", "price-asc", "price-desc", "name"];
+
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
+function first(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
+
+export default async function ShopPage({ searchParams }: { searchParams: SearchParams }) {
+  const params = await searchParams;
+  const categories = getCategories();
+  const query = first(params.q) ?? "";
+  const categoryParam = first(params.category);
+  const category = categoryParam && categories.includes(categoryParam) ? categoryParam : undefined;
+  const sortParam = first(params.sort) as SortOption | undefined;
+  const sort = sortParam && SORTS.includes(sortParam) ? sortParam : "featured";
+  const inStockOnly = first(params.inStock) === "1";
+
+  const results = filterProducts(products, { query, category, sort, inStockOnly });
+
   return (
-    <div className="container mx-auto px-4 py-16 sm:py-24">
-      <h1 className="mb-10 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-        All Products
-      </h1>
-      <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-        {mockProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))}
+    <div className="container py-12 sm:py-16">
+      <div className="mb-8 text-center">
+        <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">All Products</h1>
+        <p className="mt-2 text-muted-foreground">Find something beautiful for someone special.</p>
       </div>
+
+      <ShopFilters
+        categories={categories}
+        initial={{ query, category: category ?? "all", sort, inStockOnly }}
+        resultCount={results.length}
+      />
+
+      {results.length > 0 ? (
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+          {results.map((product, i) => (
+            <ProductCard key={product.id} product={product} priority={i < 4} />
+          ))}
+        </div>
+      ) : (
+        <div className="mt-16 text-center" data-testid="no-results">
+          <p className="text-lg font-semibold">No products match your filters.</p>
+          <p className="mt-1 text-muted-foreground">Try a different search term or category.</p>
+        </div>
+      )}
     </div>
   );
 }

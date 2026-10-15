@@ -1,4 +1,4 @@
-# **App Name**: Memento
+# **App Name**: Shore of Saiyad (originally prototyped as "Memento")
 
 ## Core Features:
 

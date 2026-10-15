@@ -1,15 +1,21 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Return Policy",
+  description: "How returns work at Shore of Saiyad.",
+};
+
 export default function ReturnPolicyPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="prose prose-lg mx-auto max-w-full rounded-lg bg-card p-8 shadow-sm">
-        <h1 className="text-center font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      <div className="prose prose-lg mx-auto max-w-full rounded-2xl border bg-card p-6 shadow-sm sm:p-10">
+        <h1 className="text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Return Policy
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
-          At Memento, we want you to be completely satisfied with your purchase. Every product is packed and delivered with utmost care, but we understand that issues may occasionally occur. Please read our return policy carefully:
+          At Shore of Saiyad, we want you to be completely satisfied with your purchase. Every product is packed and delivered with utmost care, but we understand that issues may occasionally occur. Please read our return policy carefully:
         </p>
 
-        <h2 className="mt-10 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-10 text-2xl font-bold text-foreground">
           1. Eligibility for Returns
         </h2>
         <p className="text-muted-foreground">
@@ -20,7 +26,7 @@ export default function ReturnPolicyPage() {
           <li>You have a genuine personal reason for returning the product.</li>
         </ul>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           2. Inspection at Delivery
         </h2>
         <p className="text-muted-foreground">
@@ -30,7 +36,7 @@ export default function ReturnPolicyPage() {
           2.2 If you find any issue or wish to return the item, you must inform the rider immediately or contact us while the rider is still present.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           3. Return Charges
         </h2>
         <p className="text-muted-foreground">
@@ -40,7 +46,7 @@ export default function ReturnPolicyPage() {
           3.2 If the return is requested for personal reasons, the delivery charge must be paid by the customer.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           4. Non-Returnable Conditions
         </h2>
         <p className="text-muted-foreground">
@@ -52,7 +58,7 @@ export default function ReturnPolicyPage() {
           <li>The product is returned without proper reason or against our stated policies.</li>
         </ul>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           5. Return Process
         </h2>
         <p className="text-muted-foreground">
@@ -63,7 +69,7 @@ export default function ReturnPolicyPage() {
         </p>
 
         <p className="mt-10 text-center text-lg font-semibold">
-          🌸 We always aim to make your shopping experience safe and worry-free. Thank you for choosing Memento! 🌸
+          🌸 We always aim to make your shopping experience safe and worry-free. Thank you for choosing Shore of Saiyad! 🌸
         </p>
       </div>
     </div>

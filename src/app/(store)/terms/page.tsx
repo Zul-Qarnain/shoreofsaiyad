@@ -1,15 +1,21 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Terms & Conditions",
+  description: "Delivery, payment, quality and return terms for Shore of Saiyad.",
+};
+
 export default function TermsPage() {
   return (
     <div className="container mx-auto max-w-4xl px-4 py-16 sm:px-6 lg:px-8">
-      <div className="prose prose-lg mx-auto max-w-full rounded-lg bg-card p-8 shadow-sm">
-        <h1 className="text-center font-headline text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+      <div className="prose prose-lg mx-auto max-w-full rounded-2xl border bg-card p-6 shadow-sm sm:p-10">
+        <h1 className="text-center text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
           Terms & Conditions
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
-          Welcome to Memento. Please read our terms and conditions carefully before placing an order. By shopping with us, you agree to the following policies:
+          Welcome to Shore of Saiyad. Please read our terms and conditions carefully before placing an order. By shopping with us, you agree to the following policies:
         </p>
 
-        <h2 className="mt-10 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-10 text-2xl font-bold text-foreground">
           1. Delivery Policy 🚚
         </h2>
         <p className="text-muted-foreground">
@@ -19,7 +25,7 @@ export default function TermsPage() {
           1.2 Instead, we provide safe home delivery nationwide, ensuring your products reach you in the best condition.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           2. Cash on Delivery (COD) 💵
         </h2>
         <p className="text-muted-foreground">
@@ -29,7 +35,7 @@ export default function TermsPage() {
           2.2 Orders without advance delivery payment will not be processed.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           3. Color Guarantee 🎨
         </h2>
         <p className="text-muted-foreground">
@@ -42,7 +48,7 @@ export default function TermsPage() {
           3.3 With proper care and following our maintenance guidance, your ornaments will remain beautiful for a long time.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           4. Quality Assurance 🌟
         </h2>
         <p className="text-muted-foreground">
@@ -55,7 +61,7 @@ export default function TermsPage() {
           4.3 Since we strive to provide the best quality at the best possible price, we kindly request customers not to bargain.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           5. Return Policy 🔄
         </h2>
         <p className="text-muted-foreground">
@@ -78,7 +84,7 @@ export default function TermsPage() {
           5.5 ⚠️ If the return is due to a product defect, we will bear the delivery cost.
         </p>
 
-        <h2 className="mt-8 font-headline text-2xl font-bold text-foreground">
+        <h2 className="mt-8 text-2xl font-bold text-foreground">
           6. Customer Commitment 🌸
         </h2>
         <p className="text-muted-foreground">
@@ -88,11 +94,11 @@ export default function TermsPage() {
           6.2 By purchasing from us, you acknowledge and agree to follow these terms and policies.
         </p>
         <p className="text-muted-foreground">
-          6.3 Thank you for choosing Memento — we wish you a joyful shopping experience.
+          6.3 Thank you for choosing Shore of Saiyad — we wish you a joyful shopping experience.
         </p>
 
         <p className="mt-10 text-center text-lg font-semibold">
-          🌸 Happy Shopping with Memento! 🌸
+          🌸 Happy Shopping with Shore of Saiyad! 🌸
         </p>
       </div>
     </div>

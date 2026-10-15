@@ -1,99 +1,127 @@
-
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, BadgeCheck, HandCoins, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import type { Product } from "@/types";
-import Link from "next/link";
-import Image from "next/image";
+import { getCategories, getFeaturedProducts } from "@/lib/products";
+import { siteConfig } from "@/lib/site";
 
-const mockProducts: Product[] = [
-  {
-    id: "5",
-    name: "Elegant Necklace",
-    price: 55.0,
-    imageUrl: "https://picsum.photos/600/600",
-    description: "A timeless piece for any occasion.",
-    stock: 8,
-    dataAiHint: "necklace jewelry",
-    category: "Jewelry",
-  },
-  {
-    id: "4",
-    name: "Sparkling Hair Clip",
-    price: 12.0,
-    imageUrl: "https://picsum.photos/600/601",
-    description: "Add a touch of glamour to your style.",
-    stock: 30,
-    dataAiHint: "hair clip",
-    category: "Accessories",
-  },
-  {
-    id: "3",
-    name: "Handcrafted Ceramic Mug",
-    price: 25.00,
-    imageUrl: "https://picsum.photos/600/602",
-    description: "Each mug is uniquely crafted by skilled artisans, ensuring no two are exactly alike.",
-    stock: 20,
-    dataAiHint: "ceramic mug",
-    category: "Handcrafted Mugs"
-  },
-  {
-    id: "6",
-    name: "Small Gift Set",
-    price: 18.75,
-    imageUrl: "https://picsum.photos/600/603",
-    description: "Perfect for any celebration.",
-    stock: 25,
-    dataAiHint: "gift box",
-    category: "Gifts",
-  },
+const perks = [
+  { Icon: Truck, title: "Safe Home Delivery", text: "Hand-delivered nationwide — never via rough courier handling." },
+  { Icon: HandCoins, title: "Cash on Delivery", text: "Pay only the delivery charge upfront, the rest at your door." },
+  { Icon: BadgeCheck, title: "Premium Quality", text: "Carefully sourced, mostly imported pieces." },
+  { Icon: ShieldCheck, title: "Easy Returns", text: "Inspect in front of the rider, return on the spot." },
 ];
 
 export default function HomePage() {
+  const featured = getFeaturedProducts();
+  const categories = getCategories();
+
   return (
     <>
-      <section className="relative py-20 md:py-32">
-        <div className="container mx-auto px-4 text-center">
-            <div className="relative aspect-[2/1] md:aspect-[3/1] lg:aspect-[4/1.5] max-w-5xl mx-auto rounded-lg overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent z-10" />
-                <Image
-                    src="https://picsum.photos/1200/600"
-                    alt="Souvenirs background"
-                    fill
-                    className="object-cover"
-                    data-ai-hint="souvenirs decoration"
-                />
-                <div className="absolute inset-0 z-20 flex flex-col items-center justify-center text-white p-4">
-                    <h1 className="text-4xl font-bold sm:text-5xl md:text-6xl text-shadow-md">
-                        Souvenirs for Special Moments
-                    </h1>
-                    <p className="mt-4 max-w-xl text-lg text-shadow">
-                        Discover unique gifts that capture the essence of your cherished memories.
-                    </p>
-                    <div className="mt-8">
-                        <Button asChild size="lg" className="rounded-full font-bold">
-                        <Link href="/shop">Shop Now</Link>
-                        </Button>
-                    </div>
-                </div>
+      <section className="relative overflow-hidden">
+        <div className="container grid items-center gap-10 py-14 md:py-20 lg:grid-cols-2">
+          <div className="animate-fade-up text-center lg:text-left">
+            <span className="inline-block rounded-full bg-secondary px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary">
+              New collection
+            </span>
+            <h1 className="mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl">
+              Gifts that make <span className="text-primary">special moments</span> unforgettable
+            </h1>
+            <p className="mx-auto mt-5 max-w-xl text-lg text-muted-foreground lg:mx-0">
+              {siteConfig.description}
+            </p>
+            <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+              <Button asChild size="lg" className="rounded-full px-8">
+                <Link href="/shop">
+                  Shop Now <ArrowRight className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-full px-8">
+                <Link href="/about">Our Story</Link>
+              </Button>
             </div>
+          </div>
+          <div className="relative mx-auto aspect-[4/3] w-full max-w-xl lg:aspect-square">
+            <div className="absolute -inset-4 rounded-[2rem] bg-brand-gradient opacity-20 blur-2xl" aria-hidden />
+            <div className="relative h-full w-full overflow-hidden rounded-[2rem] border-4 border-card shadow-2xl">
+              <Image
+                src="https://picsum.photos/seed/sos-hero/1000/1000"
+                alt="A curated selection of ornaments and gifts"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover"
+                data-ai-hint="jewelry gifts"
+              />
+            </div>
+          </div>
         </div>
       </section>
 
-      <section id="products" className="py-16 sm:py-24">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-10 text-center text-3xl font-bold tracking-tight sm:text-4xl">
-            Featured Products
-          </h2>
-          <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
-            {mockProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-          <div className="mt-12 text-center">
-            <Button asChild variant="outline" size="lg" className="rounded-full bg-accent hover:bg-border">
-                <Link href="/shop">View All Products</Link>
+      <section className="border-y bg-secondary/40">
+        <div className="container grid gap-6 py-10 sm:grid-cols-2 lg:grid-cols-4">
+          {perks.map(({ Icon, title, text }) => (
+            <div key={title} className="flex items-start gap-4">
+              <span className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-card text-primary shadow-sm">
+                <Icon className="h-5 w-5" />
+              </span>
+              <div>
+                <h3 className="font-semibold">{title}</h3>
+                <p className="text-sm text-muted-foreground">{text}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section id="products" className="py-16 sm:py-20">
+        <div className="container">
+          <div className="mb-10 flex flex-col items-center justify-between gap-4 text-center sm:flex-row sm:text-left">
+            <div>
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">Featured Products</h2>
+              <p className="mt-2 text-muted-foreground">Our customers&apos; favourites, hand-picked for you.</p>
+            </div>
+            <Button asChild variant="ghost" className="text-primary">
+              <Link href="/shop">
+                View all <ArrowRight className="ml-1 h-4 w-4" />
+              </Link>
             </Button>
           </div>
+          <div className="grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-4">
+            {featured.map((product, i) => (
+              <ProductCard key={product.id} product={product} priority={i < 2} />
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="pb-16 sm:pb-20">
+        <div className="container">
+          <h2 className="mb-6 text-2xl font-bold tracking-tight">Shop by category</h2>
+          <div className="flex flex-wrap gap-3">
+            {categories.map((category) => (
+              <Link
+                key={category}
+                href={`/shop?category=${encodeURIComponent(category)}`}
+                className="rounded-full border bg-card px-5 py-2 text-sm font-medium transition-colors hover:border-primary hover:bg-primary hover:text-primary-foreground"
+              >
+                {category}
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="container pb-8">
+        <div className="relative overflow-hidden rounded-3xl bg-brand-gradient px-6 py-14 text-center text-primary-foreground sm:px-12">
+          <h2 className="text-3xl font-bold sm:text-4xl">Looking for the perfect gift?</h2>
+          <p className="mx-auto mt-3 max-w-xl opacity-90">
+            Tell us who it&apos;s for and your budget — we&apos;ll help you pick something they&apos;ll treasure.
+          </p>
+          <Button asChild size="lg" variant="secondary" className="mt-8 rounded-full px-8">
+            <Link href="/contact">Ask us</Link>
+          </Button>
         </div>
       </section>
     </>
