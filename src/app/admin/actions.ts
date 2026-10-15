@@ -2,7 +2,10 @@
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
+import { setMessageRead, updateOrderStatus } from "@/lib/server/store";
+import { ORDER_STATUSES } from "@/types";
 import {
   ADMIN_COOKIE,
   ADMIN_SESSION_MAX_AGE,
@@ -51,10 +54,16 @@ const describeSchema = z.object({
 export type DescribeInput = z.infer<typeof describeSchema>;
 export type DescribeResult = { ok: true; description: string } | { ok: false; error: string };
 
+// Server actions are public endpoints: re-check auth in each one, not just in middleware.
+async function isAdmin(): Promise<boolean> {
+  return isValidAdminToken((await cookies()).get(ADMIN_COOKIE)?.value);
+}
+
+const SESSION_EXPIRED = "Your session has expired. Please sign in again.";
+
 export async function generateDescriptionAction(input: DescribeInput): Promise<DescribeResult> {
-  // Server actions are public endpoints: re-check auth here, not just in middleware.
-  if (!(await isValidAdminToken((await cookies()).get(ADMIN_COOKIE)?.value))) {
-    return { ok: false, error: "Your session has expired. Please sign in again." };
+  if (!(await isAdmin())) {
+    return { ok: false, error: SESSION_EXPIRED };
   }
   const parsed = describeSchema.safeParse(input);
   if (!parsed.success) {
@@ -71,4 +80,26 @@ export async function generateDescriptionAction(input: DescribeInput): Promise<D
     console.error("generateProductDescription failed", err);
     return { ok: false, error: "The AI service failed to respond. Please try again." };
   }
+}
+
+export type AdminActionResult = { ok: true } | { ok: false; error: string };
+
+const statusSchema = z.object({ id: z.string().min(1).max(40), status: z.enum(ORDER_STATUSES) });
+
+export async function updateOrderStatusAction(id: string, status: string): Promise<AdminActionResult> {
+  if (!(await isAdmin())) return { ok: false, error: SESSION_EXPIRED };
+  const parsed = statusSchema.safeParse({ id, status });
+  if (!parsed.success) return { ok: false, error: "Invalid order status." };
+  const result = await updateOrderStatus(parsed.data.id, parsed.data.status);
+  if (!result.ok) return result;
+  revalidatePath("/", "layout");
+  return { ok: true };
+}
+
+export async function setMessageReadAction(id: string, read: boolean): Promise<AdminActionResult> {
+  if (!(await isAdmin())) return { ok: false, error: SESSION_EXPIRED };
+  if (typeof id !== "string" || typeof read !== "boolean") return { ok: false, error: "Invalid request." };
+  await setMessageRead(id, read);
+  revalidatePath("/admin");
+  return { ok: true };
 }

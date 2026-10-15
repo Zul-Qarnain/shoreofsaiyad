@@ -4,6 +4,7 @@ const PORT = Number(process.env.E2E_PORT ?? 3100);
 
 export default defineConfig({
   testDir: "tests/e2e",
+  globalSetup: "./tests/e2e/global-setup.ts",
   timeout: 60_000,
   retries: process.env.CI ? 1 : 0,
   use: {
@@ -22,6 +23,6 @@ export default defineConfig({
     command: `npx next start -p ${PORT}`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
-    env: { ADMIN_PASSWORD: "e2e-admin-password" },
+    env: { ADMIN_PASSWORD: "e2e-admin-password", DATA_DIR: ".data-e2e" },
   },
 });

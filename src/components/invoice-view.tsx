@@ -1,33 +1,26 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { CheckCircle2, Download, FileQuestion, Loader2, Printer, ShoppingCart } from "lucide-react";
+import { CheckCircle2, Download, Loader2, Printer, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Logo } from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
-import { getOrder } from "@/lib/orders";
 import { deliveryOptions, walletNames } from "@/lib/checkout";
 import { formatDate, formatPrice } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import type { Order } from "@/types";
 
-export function InvoiceView({ id }: { id: string }) {
+export function InvoiceView({ order }: { order: Order }) {
   const invoiceRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
-  const [order, setOrder] = useState<Order | null | undefined>(undefined);
   const [downloading, setDownloading] = useState(false);
 
-  useEffect(() => {
-    setOrder(getOrder(id) ?? null);
-  }, [id]);
-
   const handleDownloadPdf = async () => {
-    if (!invoiceRef.current || !order) return;
+    if (!invoiceRef.current) return;
     setDownloading(true);
     try {
       // Loaded on demand: these libraries are large and only needed here.
@@ -56,47 +49,24 @@ export function InvoiceView({ id }: { id: string }) {
     }
   };
 
-  if (order === undefined) {
-    return (
-      <div className="container max-w-3xl py-12">
-        <Skeleton className="h-[600px] rounded-xl" />
-      </div>
-    );
-  }
-
-  if (order === null) {
-    return (
-      <div className="container flex max-w-lg flex-col items-center py-20 text-center">
-        <FileQuestion className="h-12 w-12 text-muted-foreground/50" />
-        <h1 className="mt-4 text-2xl font-semibold">Invoice not found</h1>
-        <p className="mt-2 text-muted-foreground">
-          We couldn&apos;t find order <span className="font-mono">{id}</span> on this device. Invoices are stored in the
-          browser you ordered from. Please contact us with your order ID if you need a copy.
-        </p>
-        <div className="mt-6 flex gap-3">
-          <Button asChild>
-            <Link href="/shop">Continue Shopping</Link>
-          </Button>
-          <Button asChild variant="outline">
-            <Link href="/contact">Contact us</Link>
-          </Button>
-        </div>
-      </div>
-    );
-  }
-
   const zone = deliveryOptions[order.deliveryZone];
 
   return (
     <div className="bg-muted/40 py-10 sm:py-14 print:bg-white print:py-0">
       <div className="container max-w-3xl">
-        <div className="mb-6 flex items-center gap-3 rounded-xl border border-success/30 bg-success/10 p-4 text-sm no-print">
-          <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success" />
-          <p>
-            Thank you, <strong>{order.customer.name}</strong>! Your order has been received. We&apos;ll verify your payment
-            and call you at <strong>{order.customer.phone}</strong> to confirm.
-          </p>
-        </div>
+        {order.status === "Cancelled" ? (
+          <div className="mb-6 rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-sm no-print">
+            This order has been cancelled. Please contact us if you have any questions.
+          </div>
+        ) : (
+          <div className="mb-6 flex items-center gap-3 rounded-xl border border-success/30 bg-success/10 p-4 text-sm no-print">
+            <CheckCircle2 className="h-5 w-5 flex-shrink-0 text-success" />
+            <p>
+              Thank you, <strong>{order.customer.name}</strong>! Your order has been received. We&apos;ll verify your
+              payment and call you at <strong>{order.customer.phone}</strong> to confirm.
+            </p>
+          </div>
+        )}
 
         <Card className="overflow-hidden shadow-lg print:shadow-none" ref={invoiceRef} data-testid="invoice">
           <CardHeader className="border-b bg-secondary/50">

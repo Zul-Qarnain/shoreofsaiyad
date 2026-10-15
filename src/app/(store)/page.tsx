@@ -3,7 +3,8 @@ import Link from "next/link";
 import { ArrowRight, BadgeCheck, HandCoins, ShieldCheck, Truck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ProductCard } from "@/components/product-card";
-import { getCategories, getFeaturedProducts } from "@/lib/products";
+import { getCategories } from "@/lib/products";
+import { getLiveProducts } from "@/lib/server/store";
 import { siteConfig } from "@/lib/site";
 
 const perks = [
@@ -13,8 +14,10 @@ const perks = [
   { Icon: ShieldCheck, title: "Easy Returns", text: "Inspect in front of the rider, return on the spot." },
 ];
 
-export default function HomePage() {
-  const featured = getFeaturedProducts();
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const featured = (await getLiveProducts()).filter((p) => p.featured);
   const categories = getCategories();
 
   return (

@@ -1,15 +1,31 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { AlertTriangle, LogOut, Package, PackageX, Sparkles } from "lucide-react";
+import { AlertTriangle, Inbox, LogOut, Mail, ShoppingBag, Sparkles, Wallet } from "lucide-react";
 import { logout } from "@/app/admin/actions";
 import { DescriptionGenerator } from "@/components/admin/description-generator";
+import { MessageReadToggle, OrderStatusActions } from "@/components/admin/order-status-actions";
+import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StockBadge } from "@/components/stock-badge";
-import { getCategories, LOW_STOCK_THRESHOLD, products } from "@/lib/products";
+import { getCategories, LOW_STOCK_THRESHOLD } from "@/lib/products";
+import { deliveryOptions, walletNames } from "@/lib/checkout";
 import { formatPrice } from "@/lib/format";
+import { getLiveProducts, listMessages, listOrders } from "@/lib/server/store";
+import type { OrderStatus } from "@/types";
+
+const statusStyles: Record<OrderStatus, string> = {
+  "Pending Verification": "bg-gold/20 text-foreground",
+  Confirmed: "bg-primary/15 text-primary",
+  Shipped: "bg-secondary text-primary",
+  Delivered: "bg-success/15 text-success",
+  Cancelled: "bg-destructive/15 text-destructive",
+};
+
+const dateTime = (iso: string) =>
+  new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Dhaka" });
 
 export const metadata: Metadata = {
   title: "Admin",
@@ -18,16 +34,19 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const [products, orders, messages] = await Promise.all([getLiveProducts(), listOrders(), listMessages()]);
   const outOfStock = products.filter((p) => p.stock <= 0);
   const lowStock = products.filter((p) => p.stock > 0 && p.stock <= LOW_STOCK_THRESHOLD);
-  const inventoryValue = products.reduce((acc, p) => acc + p.price * p.stock, 0);
+  const pendingOrders = orders.filter((o) => o.status === "Pending Verification");
+  const revenue = orders.filter((o) => o.status !== "Cancelled").reduce((acc, o) => acc + o.total, 0);
+  const unread = messages.filter((m) => !m.read);
 
   const stats = [
-    { label: "Products", value: products.length, Icon: Package },
-    { label: "Low stock", value: lowStock.length, Icon: AlertTriangle },
-    { label: "Sold out", value: outOfStock.length, Icon: PackageX },
-    { label: "Inventory value", value: formatPrice(inventoryValue), Icon: Sparkles },
+    { label: "Awaiting verification", value: pendingOrders.length, Icon: ShoppingBag },
+    { label: "Order value (excl. cancelled)", value: formatPrice(revenue), Icon: Wallet },
+    { label: "Low / sold out", value: `${lowStock.length} / ${outOfStock.length}`, Icon: AlertTriangle },
+    { label: "Unread messages", value: unread.length, Icon: Mail },
   ];
 
   return (
@@ -68,11 +87,91 @@ export default function AdminPage() {
           ))}
         </div>
 
+        <Card>
+          <CardHeader>
+            <CardTitle>Orders</CardTitle>
+            <CardDescription>
+              Check each Transaction ID in your bKash/Nagad app before confirming. Cancelling returns items to stock.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="overflow-x-auto">
+            {orders.length === 0 ? (
+              <p className="py-8 text-center text-muted-foreground" data-testid="no-orders">
+                No orders yet.
+              </p>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Order</TableHead>
+                    <TableHead>Customer</TableHead>
+                    <TableHead>Items</TableHead>
+                    <TableHead>Payment</TableHead>
+                    <TableHead className="text-right">Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {orders.map((o) => (
+                    <TableRow key={o.id} data-testid="admin-order">
+                      <TableCell className="whitespace-nowrap align-top">
+                        <Link href={`/invoice/${o.id}`} className="font-mono text-xs hover:text-primary" target="_blank">
+                          {o.id}
+                        </Link>
+                        <p className="text-xs text-muted-foreground">{dateTime(o.createdAt)}</p>
+                      </TableCell>
+                      <TableCell className="min-w-[200px] align-top text-sm">
+                        <p className="font-medium">{o.customer.name}</p>
+                        <a href={`tel:${o.customer.phone}`} className="block hover:text-primary">
+                          {o.customer.phone}
+                        </a>
+                        <p className="text-muted-foreground">
+                          {o.customer.address}, {o.customer.city} · {deliveryOptions[o.deliveryZone].name}
+                        </p>
+                        {o.customer.notes && <p className="mt-1 italic text-muted-foreground">“{o.customer.notes}”</p>}
+                      </TableCell>
+                      <TableCell className="min-w-[160px] align-top text-sm">
+                        {o.items.map((i) => (
+                          <p key={i.id}>
+                            {i.quantity} × {i.name}
+                          </p>
+                        ))}
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap align-top text-sm">
+                        <p>
+                          {walletNames[o.payment.wallet]} · <span className="font-mono">{o.payment.transactionId}</span>
+                        </p>
+                        <p className="text-muted-foreground">
+                          Paid {formatPrice(o.payment.paidAmount)} · Due {formatPrice(o.payment.dueOnDelivery)}
+                        </p>
+                      </TableCell>
+                      <TableCell className="whitespace-nowrap text-right align-top font-semibold">
+                        {formatPrice(o.total)}
+                      </TableCell>
+                      <TableCell className="align-top">
+                        <Badge variant="secondary" className={`whitespace-nowrap ${statusStyles[o.status]}`}>
+                          {o.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="align-top">
+                        <OrderStatusActions orderId={o.id} status={o.status} />
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+
         <div className="grid gap-8 lg:grid-cols-[1.2fr_1fr]">
           <Card>
             <CardHeader>
               <CardTitle>Inventory</CardTitle>
-              <CardDescription>Catalog is defined in src/lib/products.ts.</CardDescription>
+              <CardDescription>
+                Live stock. Product details and starting stock are defined in src/lib/products.ts.
+              </CardDescription>
             </CardHeader>
             <CardContent className="overflow-x-auto">
               <Table>
@@ -119,6 +218,40 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Inbox className="h-5 w-5 text-primary" /> Messages
+            </CardTitle>
+            <CardDescription>Sent from the Contact page.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {messages.length === 0 ? (
+              <p className="py-8 text-center text-muted-foreground">No messages yet.</p>
+            ) : (
+              <ul className="divide-y">
+                {messages.map((m) => (
+                  <li key={m.id} className="flex flex-col gap-2 py-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="min-w-0">
+                      <p className="font-medium">
+                        {!m.read && <span className="mr-2 inline-block h-2 w-2 rounded-full bg-primary" aria-label="Unread" />}
+                        {m.name}{" "}
+                        <a href={`mailto:${m.email}`} className="text-sm font-normal text-muted-foreground hover:text-primary">
+                          {m.email}
+                        </a>
+                        {m.phone && <span className="text-sm font-normal text-muted-foreground"> · {m.phone}</span>}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{dateTime(m.createdAt)}</p>
+                      <p className="mt-2 whitespace-pre-wrap break-words text-sm">{m.message}</p>
+                    </div>
+                    <MessageReadToggle id={m.id} read={m.read} />
+                  </li>
+                ))}
+              </ul>
+            )}
+          </CardContent>
+        </Card>
       </main>
     </div>
   );

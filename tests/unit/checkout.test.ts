@@ -67,7 +67,7 @@ describe("buildOrder", () => {
   it("snapshots items, customer and payment", () => {
     const now = new Date("2026-01-02T03:04:05Z");
     const order = buildOrder(items, checkoutSchema.parse(validForm), now);
-    expect(order.id).toMatch(/^SOS-260102-[0-9A-F]{6}$/);
+    expect(order.id).toMatch(/^SOS-260102-[0-9A-F]{8}$/);
     expect(order.createdAt).toBe(now.toISOString());
     expect(order.customer.email).toBeUndefined();
     expect(order.items).toHaveLength(2);

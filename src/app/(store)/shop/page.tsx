@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { ProductCard } from "@/components/product-card";
 import { ShopFilters } from "@/components/shop-filters";
-import { filterProducts, getCategories, products, type SortOption } from "@/lib/products";
+import { filterProducts, getCategories, type SortOption } from "@/lib/products";
+import { getLiveProducts } from "@/lib/server/store";
 
 export const metadata: Metadata = {
   title: "Shop",
@@ -26,7 +27,7 @@ export default async function ShopPage({ searchParams }: { searchParams: SearchP
   const sort = sortParam && SORTS.includes(sortParam) ? sortParam : "featured";
   const inStockOnly = first(params.inStock) === "1";
 
-  const results = filterProducts(products, { query, category, sort, inStockOnly });
+  const results = filterProducts(await getLiveProducts(), { query, category, sort, inStockOnly });
 
   return (
     <div className="container py-12 sm:py-16">

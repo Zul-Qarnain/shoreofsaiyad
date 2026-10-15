@@ -2,7 +2,16 @@
 
 import type { CartItem, Product } from "@/types";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { addItem, cartCount, cartSubtotal, parseStoredCart, removeItem, setItemQuantity } from "@/lib/cart";
+import {
+  addItem,
+  applyStockLevels as applyLevels,
+  cartCount,
+  cartSubtotal,
+  parseStoredCart,
+  removeItem,
+  setItemQuantity,
+} from "@/lib/cart";
+import { getStockLevelsAction } from "@/app/actions";
 import { getProductById } from "@/lib/products";
 
 const STORAGE_KEY = "sos-cart";
@@ -16,6 +25,8 @@ interface CartContextType {
   removeFromCart: (productId: string) => void;
   updateQuantity: (productId: string, quantity: number) => void;
   clearCart: () => void;
+  /** Syncs the cart with live stock levels from the server. */
+  applyStockLevels: (levels: Record<string, number>) => void;
   cartCount: number;
   cartTotal: number;
   /** False until the cart has been restored from localStorage (avoids an empty-cart flash). */
@@ -48,6 +59,23 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
     setIsHydrated(true);
   }, []);
+
+  const applyStockLevels = useCallback((levels: Record<string, number>) => {
+    setCartItems((prev) => applyLevels(prev, levels));
+  }, []);
+
+  // The bundled catalog only knows initial stock; fetch live levels once restored.
+  const [stockSynced, setStockSynced] = useState(false);
+  useEffect(() => {
+    if (!isHydrated || stockSynced) return;
+    setStockSynced(true);
+    if (cartItems.length === 0) return;
+    getStockLevelsAction(cartItems.map((i) => i.id))
+      .then(applyStockLevels)
+      .catch(() => {
+        // Offline / server error: checkout re-validates stock anyway.
+      });
+  }, [isHydrated, stockSynced, cartItems, applyStockLevels]);
 
   useEffect(() => {
     if (!isHydrated) return;
@@ -88,13 +116,14 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       removeFromCart,
       updateQuantity,
       clearCart,
+      applyStockLevels,
       cartCount: cartCount(cartItems),
       cartTotal: cartSubtotal(cartItems),
       isHydrated,
       isCartOpen,
       setIsCartOpen,
     }),
-    [cartItems, addToCart, removeFromCart, updateQuantity, clearCart, isHydrated, isCartOpen]
+    [cartItems, addToCart, removeFromCart, updateQuantity, clearCart, applyStockLevels, isHydrated, isCartOpen]
   );
 
   return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

@@ -1,5 +1,18 @@
 import { expect, test, type Page } from "@playwright/test";
 
+async function adminLogin(page: Page) {
+  await page.goto("/admin/login");
+  await page.getByLabel("Password").fill("e2e-admin-password");
+  await page.getByRole("button", { name: "Sign in" }).click();
+  await expect(page).toHaveURL(/\/admin$/);
+}
+
+async function stockOnProductPage(page: Page, id: string): Promise<number> {
+  await page.goto(`/products/${id}`);
+  const text = await page.getByText(/\d+ in stock$/).textContent();
+  return Number(text?.match(/(\d+)/)?.[1]);
+}
+
 async function closeCart(page: Page) {
   await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toBeHidden();
@@ -61,7 +74,7 @@ test("header search navigates to filtered shop", async ({ page }) => {
 });
 
 test("checkout validates input, places an order and shows a real invoice", async ({ page }) => {
-  await page.goto("/products/1");
+  const stockBefore = await stockOnProductPage(page, "1");
   await page.getByRole("button", { name: "Buy Now" }).click();
   await expect(page).toHaveURL(/\/checkout/);
 
@@ -84,8 +97,50 @@ test("checkout validates input, places an order and shows a real invoice", async
   await expect(page.getByTestId("invoice-total")).toHaveText("৳175.00");
   await expect(page.getByTestId("cart-count")).toHaveCount(0);
 
-  await page.reload();
-  await expect(page.getByTestId("invoice-customer")).toHaveText("Ayesha Rahman");
+  // Invoices are stored server-side: viewable from a fresh browser context too.
+  const invoiceUrl = page.url();
+  const other = await page.context().browser()!.newPage();
+  await other.goto(invoiceUrl);
+  await expect(other.getByTestId("invoice-customer")).toHaveText("Ayesha Rahman");
+  await other.close();
+
+  expect(await stockOnProductPage(page, "1")).toBeLessThan(stockBefore);
+});
+
+test("admin sees new orders and can confirm or cancel them", async ({ page }) => {
+  const name = `E2E Buyer ${Date.now()}`;
+  await page.goto("/products/3");
+  await page.getByRole("button", { name: "Buy Now" }).click();
+  await page.getByLabel("Full name").fill(name);
+  await page.getByLabel("Mobile number").fill("01812345678");
+  await page.getByLabel("Full address").fill("Road 1, Uttara Sector 7");
+  await page.getByLabel("City / District").fill("Dhaka");
+  await page.getByLabel("Transaction ID").fill("TRX123456");
+  await page.getByRole("button", { name: "Place Order" }).click();
+  await expect(page).toHaveURL(/\/invoice\/SOS-/);
+
+  await adminLogin(page);
+  const row = page.getByTestId("admin-order").filter({ hasText: name });
+  await expect(row).toContainText("Pending Verification");
+  await row.getByRole("button", { name: "Confirm" }).click();
+  await expect(row).toContainText("Confirmed");
+  page.once("dialog", (d) => d.accept());
+  await row.getByRole("button", { name: "Cancel" }).click();
+  await expect(row).toContainText("Cancelled");
+  await expect(row.getByRole("button")).toHaveCount(0);
+});
+
+test("contact form delivers messages to the admin inbox", async ({ page }) => {
+  const message = `Do you offer gift wrapping? ref-${Date.now()}`;
+  await page.goto("/contact");
+  await page.getByLabel("Name").fill("Rafi");
+  await page.getByLabel("Email").fill("rafi@example.com");
+  await page.getByLabel("Message").fill(message);
+  await page.getByRole("button", { name: "Send Message" }).click();
+  await expect(page.getByText("Message sent!")).toBeVisible();
+
+  await adminLogin(page);
+  await expect(page.getByText(message)).toBeVisible();
 });
 
 test("unknown invoice shows a helpful message", async ({ page }) => {

@@ -33,6 +33,9 @@ export type DeliveryZone = "inside-dhaka" | "sub-dhaka" | "outside-dhaka";
 export type PaymentMethod = "cod" | "mobile";
 export type MobileWallet = "bkash" | "nagad";
 
+export const ORDER_STATUSES = ["Pending Verification", "Confirmed", "Shipped", "Delivered", "Cancelled"] as const;
+export type OrderStatus = (typeof ORDER_STATUSES)[number];
+
 export interface OrderItem {
   id: string;
   name: string;
@@ -44,7 +47,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   createdAt: string;
-  status: "Pending Verification" | "Confirmed";
+  status: OrderStatus;
   customer: {
     name: string;
     phone: string;
@@ -67,4 +70,14 @@ export interface Order {
   subtotal: number;
   deliveryCharge: number;
   total: number;
+}
+
+export interface ContactMessage {
+  id: string;
+  createdAt: string;
+  name: string;
+  email: string;
+  phone?: string;
+  message: string;
+  read: boolean;
 }

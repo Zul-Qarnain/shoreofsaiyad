@@ -10,14 +10,15 @@ import { StockBadge } from "@/components/stock-badge";
 import { ProductCard } from "@/components/product-card";
 import { ProductPurchase } from "@/components/product-purchase";
 import { ProductReviews } from "@/components/product-reviews";
-import { averageRating, getProductById, getRelatedProducts, getReviewsForProduct, products } from "@/lib/products";
+import { averageRating, getProductById, getRelatedProducts, getReviewsForProduct } from "@/lib/products";
+import { withLiveStock } from "@/lib/inventory";
+import { getLiveProduct, getStockLevels } from "@/lib/server/store";
 import { siteConfig } from "@/lib/site";
 
 type Params = Promise<{ id: string }>;
 
-export function generateStaticParams() {
-  return products.map((p) => ({ id: p.id }));
-}
+// Stock changes with every order, so render on each request.
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { id } = await params;
@@ -32,12 +33,13 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
 
 export default async function ProductDetailPage({ params }: { params: Params }) {
   const { id } = await params;
-  const product = getProductById(id);
+  const product = await getLiveProduct(id);
   if (!product) notFound();
 
   const productReviews = getReviewsForProduct(product.id);
   const rating = averageRating(productReviews);
-  const related = getRelatedProducts(product);
+  const relatedStatic = getRelatedProducts(product);
+  const related = withLiveStock(relatedStatic, await getStockLevels(relatedStatic.map((p) => p.id)));
 
   const jsonLd = {
     "@context": "https://schema.org",

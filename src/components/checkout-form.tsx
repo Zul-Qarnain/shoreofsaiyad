@@ -17,8 +17,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
+import { placeOrderAction } from "@/app/actions";
 import {
-  buildOrder,
   checkoutSchema,
   computeTotals,
   deliveryOptions,
@@ -26,7 +26,6 @@ import {
   type CheckoutData,
   type CheckoutFormValues,
 } from "@/lib/checkout";
-import { saveOrder } from "@/lib/orders";
 import { formatPrice } from "@/lib/format";
 import { siteConfig } from "@/lib/site";
 import type { DeliveryZone, MobileWallet, PaymentMethod } from "@/types";
@@ -35,7 +34,7 @@ const optionCard =
   "flex cursor-pointer items-center justify-between gap-4 rounded-lg border p-4 transition-colors hover:bg-accent/50 has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-primary/5";
 
 export function CheckoutForm() {
-  const { cartItems, isHydrated, clearCart } = useCart();
+  const { cartItems, isHydrated, clearCart, applyStockLevels } = useCart();
   const router = useRouter();
   const { toast } = useToast();
   const [placing, setPlacing] = useState(false);
@@ -62,22 +61,27 @@ export function CheckoutForm() {
   const totals = computeTotals(cartItems, zone, method);
   const walletNumber = wallet === "bkash" ? siteConfig.bkashNumber : siteConfig.nagadNumber;
 
-  const onSubmit = (data: CheckoutData) => {
+  const onSubmit = async (data: CheckoutData) => {
     if (cartItems.length === 0) return;
     setPlacing(true);
-    try {
-      const order = buildOrder(cartItems, data);
-      saveOrder(order);
-      router.replace(`/invoice/${order.id}`);
-      clearCart();
-      toast({ title: "Order placed!", description: `Order ${order.id} is awaiting payment verification.` });
-    } catch {
+    const fail = (description: string) => {
       setPlacing(false);
-      toast({
-        variant: "destructive",
-        title: "Could not place order",
-        description: "Please check your browser storage settings and try again.",
-      });
+      toast({ variant: "destructive", title: "Could not place order", description });
+    };
+    try {
+      const result = await placeOrderAction(
+        cartItems.map(({ id, quantity }) => ({ id, quantity })),
+        { ...data, email: data.email ?? "", notes: data.notes ?? "" }
+      );
+      if (!result.ok) {
+        if (result.available) applyStockLevels(result.available);
+        return fail(result.error);
+      }
+      router.replace(`/invoice/${result.orderId}`);
+      clearCart();
+      toast({ title: "Order placed!", description: `Order ${result.orderId} is awaiting payment verification.` });
+    } catch {
+      fail("Network error — please check your connection and try again.");
     }
   };
 

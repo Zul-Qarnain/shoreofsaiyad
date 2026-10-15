@@ -47,3 +47,5 @@ firestore-debug.log
 /test-results/
 /playwright-report/
 !.env.example
+/.data/
+/.data-e2e/

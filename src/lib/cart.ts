@@ -12,7 +12,7 @@ export function addItem(items: CartItem[], product: Product, quantity = 1): Cart
   const existing = items.find((i) => i.id === product.id);
   if (existing) {
     return items.map((i) =>
-      i.id === product.id ? { ...i, quantity: clampQuantity(i.quantity + quantity, product.stock) } : i
+      i.id === product.id ? { ...i, stock: product.stock, quantity: clampQuantity(i.quantity + quantity, product.stock) } : i
     );
   }
   return [...items, { ...product, quantity: clampQuantity(quantity, product.stock) }];
@@ -60,4 +60,15 @@ export function parseStoredCart(raw: string | null): CartItem[] {
   } catch {
     return [];
   }
+}
+
+/** Updates cart lines with live stock levels, clamping quantities and dropping sold-out items. */
+export function applyStockLevels(items: CartItem[], levels: Record<string, number>): CartItem[] {
+  return items
+    .map((i) => {
+      const stock = levels[i.id];
+      if (stock === undefined) return i;
+      return { ...i, stock, quantity: clampQuantity(i.quantity, stock) };
+    })
+    .filter((i) => i.quantity > 0);
 }

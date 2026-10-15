@@ -2,29 +2,17 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Send } from "lucide-react";
+import { Loader2, Send } from "lucide-react";
+import { sendContactMessageAction } from "@/app/actions";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { contactSchema, type ContactValues } from "@/lib/contact";
 import { siteConfig } from "@/lib/site";
 
-const contactSchema = z.object({
-  name: z.string().trim().min(2, "Please enter your name."),
-  email: z.string().trim().email("Enter a valid email address."),
-  phone: z.string().trim().optional(),
-  message: z.string().trim().min(10, "Message should be at least 10 characters.").max(2000),
-});
-
-type ContactValues = z.infer<typeof contactSchema>;
-
-/**
- * There is no mail backend yet, so the message is handed to the visitor's email
- * client via a pre-filled mailto: link. Swap `onSubmit` for a server action once
- * an email provider is configured.
- */
+/** Messages are stored server-side and listed in the admin dashboard. */
 export function ContactForm() {
   const { toast } = useToast();
   const form = useForm<ContactValues>({
@@ -32,14 +20,22 @@ export function ContactForm() {
     defaultValues: { name: "", email: "", phone: "", message: "" },
   });
 
-  const onSubmit = (values: ContactValues) => {
-    const body = [values.message, "", `— ${values.name}`, values.email, values.phone].filter(Boolean).join("\n");
-    const href = `mailto:${siteConfig.supportEmail}?subject=${encodeURIComponent(
-      `Message from ${values.name}`
-    )}&body=${encodeURIComponent(body)}`;
-    window.location.href = href;
-    toast({ title: "Opening your email app…", description: `Your message is addressed to ${siteConfig.supportEmail}.` });
-    form.reset();
+  const onSubmit = async (values: ContactValues) => {
+    try {
+      const result = await sendContactMessageAction(values);
+      if (!result.ok) {
+        toast({ variant: "destructive", title: "Message not sent", description: result.error });
+        return;
+      }
+      toast({ title: "Message sent!", description: "Thank you — we'll get back to you within 24 hours." });
+      form.reset();
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "Message not sent",
+        description: `Network error. You can also email us at ${siteConfig.supportEmail}.`,
+      });
+    }
   };
 
   return (
@@ -99,8 +95,13 @@ export function ContactForm() {
             </FormItem>
           )}
         />
-        <Button type="submit" size="lg" className="sm:col-span-2">
-          <Send className="mr-2 h-4 w-4" /> Send Message
+        <Button type="submit" size="lg" className="sm:col-span-2" disabled={form.formState.isSubmitting}>
+          {form.formState.isSubmitting ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="mr-2 h-4 w-4" />
+          )}{" "}
+          Send Message
         </Button>
       </form>
     </Form>

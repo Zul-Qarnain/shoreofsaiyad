@@ -62,7 +62,8 @@ export function computeTotals(items: CartItem[], zone: DeliveryZone, method: Pay
 
 export function generateOrderId(now = new Date()): string {
   const date = now.toISOString().slice(2, 10).replace(/-/g, "");
-  const bytes = new Uint8Array(3);
+  // 32 random bits: invoice URLs are looked up by id, so ids must not be guessable.
+  const bytes = new Uint8Array(4);
   globalThis.crypto.getRandomValues(bytes);
   const rand = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("").toUpperCase();
   return `SOS-${date}-${rand}`;
